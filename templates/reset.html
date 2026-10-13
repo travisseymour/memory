@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}Reset{% endblock %}
+{% block body %}
+{% if cleared %}
+  <h1>Cleared.</h1>
+  <p class="msg">All {{ what }} have been deleted.</p>
+{% else %}
+  <h1>Are you sure?</h1>
+  <p>This will delete all {{ what }}.</p>
+  <form method="post">
+    <button type="submit" style="background:#c62828;">Yes</button>
+  </form>
+{% endif %}
+{% endblock %}

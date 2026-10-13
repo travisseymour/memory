@@ -1,0 +1,31 @@
+crate a flask app here called memory that I can push to github.
+From github, I will deploy this on my railway account.
+the default page just says "Memory - tls 2026"
+The first functionality is for a serial recall task.
+The "/srt" route should show a version of this using a larger font:
+
+How Many Did You 
+Remember Correct?
+
+__
+
+[SUBMIT]
+
+thus, a large numerical input field that takes numbers from 0 and 99, and a submit button.
+This information gets stored in a simple persistent list of numbers. Each student will be given a serial recall task, and then asked to go here and enter how many items they remembered correctly.
+
+
+The "/srt-reset" route, asks Are you sure? [Yes]. If the button is pressed, the persistent list is emptied.
+
+The "/srt-graph" route, draws a bar graph showing the number of each value in the list sorted from lowest to largest. It also features a title "Average: [Average of values in list] ([winsorized average of values in list])". This is how I'll display the class's SRT results.
+
+
+The "/list1" route shows a vertical list of these words in this particular order. Next to each word is a checkbox. AT the top, write "check all of the words you recalled correctly". Here is the list: Reason, Treatment, Study, Dumpster, Index, Phantom, Canyon, Engine, Hardware, Album, Gadget, Freezer, Jacket, Random, Stapler, Bleacher.
+There is a SUBMIT button at the bottom. update a persistent dict somewhere that collects how many people remembered each word. Perhaps a sqlite database is appropriate?
+
+The "/list1-reset" route clears the storage.
+The "/list1-graph" route shows a line graph showing the number of students who correctly recalled each word in the list presentation order.
+
+Finally, have a duplicate set of routes, "/list2", "/list2-reset", and "/list2-graph" that does the same for words in this list: Dandruff, Razor, Bounty, Neutron, Logic, Theory, Bottom, Kayak, Elbow, Sweater, Resort, Handle, Yellow, Concert, Address, Morning 
+
+

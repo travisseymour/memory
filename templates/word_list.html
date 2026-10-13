@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ name|capitalize }}{% endblock %}
+{% block head %}
+<style>
+  h1 { font-size: 2rem; }
+  ul { list-style: none; padding: 0; display: inline-block; text-align: left; margin: 0 0 1em; }
+  li { font-size: 1.6rem; margin: 0.35em 0; }
+  label { cursor: pointer; display: flex; align-items: center; gap: 0.6em; }
+  input[type=checkbox] { width: 1.4em; height: 1.4em; }
+</style>
+{% endblock %}
+{% block body %}
+{% if done %}
+  <p class="msg">Thanks! Your answers were recorded.</p>
+{% endif %}
+<h1>Check all of the words you recalled correctly</h1>
+<form method="post">
+  <ul>
+  {% for w in words %}
+    <li><label><input type="checkbox" name="{{ w }}" value="1"> {{ w }}</label></li>
+  {% endfor %}
+  </ul><br>
+  <button type="submit">SUBMIT</button>
+</form>
+{% endblock %}

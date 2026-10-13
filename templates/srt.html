@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Serial Recall{% endblock %}
+{% block head %}
+<style>
+  h1 { font-size: 3.2rem; }
+  input[type=number] { font-size: 5rem; width: 2.6em; text-align: center; margin: 0.3em 0 0.5em;
+                       border: none; border-bottom: 4px solid #222; background: transparent; }
+</style>
+{% endblock %}
+{% block body %}
+{% if done %}
+  <p class="msg">Thanks! Your answer was recorded.</p>
+{% endif %}
+{% if error %}
+  <p class="err">{{ error }}</p>
+{% endif %}
+<form method="post">
+  <h1>How Many Did You<br>Remember Correct?</h1>
+  <input type="number" name="value" min="0" max="99" step="1" required autofocus inputmode="numeric"><br>
+  <button type="submit">SUBMIT</button>
+</form>
+{% endblock %}
