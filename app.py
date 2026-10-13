@@ -2,7 +2,7 @@ import os
 import sqlite3
 from statistics import mean
 
-from flask import Flask, abort, g, redirect, render_template, request, url_for
+from flask import Flask, abort, g, jsonify, redirect, render_template, request, url_for
 
 app = Flask(__name__)
 
@@ -54,6 +54,14 @@ def winsorized_mean(values, proportion=0.2):
     return mean(s)
 
 
+def render_graph(title, labels, counts, n, **chart_options):
+    """Render a graph page, or just its data when the page polls with ?json=1."""
+    if request.args.get("json"):
+        return jsonify(title=title, labels=labels, counts=counts, n=n)
+    return render_template("graph.html", title=title, labels=labels, counts=counts, n=n,
+                           **chart_options)
+
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -75,8 +83,8 @@ def srt():
             db = get_db()
             db.execute("INSERT INTO srt (value) VALUES (?)", (value,))
             db.commit()
-            return redirect(url_for("srt", done=1))
-    return render_template("srt.html", done=request.args.get("done"), error=error)
+            return redirect(url_for("srt_graph"))
+    return render_template("srt.html", error=error)
 
 
 @app.route("/srt-reset", methods=["GET", "POST"])
@@ -98,9 +106,8 @@ def srt_graph():
         counts = [values.count(v) for v in labels]
     else:
         title, labels, counts = "Average: — (no responses yet)", [], []
-    return render_template("graph.html", kind="bar", title=title, labels=labels, counts=counts,
-                           x_label="Number remembered correctly", y_label="Number of students",
-                           n=len(values))
+    return render_graph(kind="bar", title=title, labels=labels, counts=counts, n=len(values),
+                        x_label="Number remembered correctly", y_label="Number of students")
 
 
 # ---------- Word lists ----------
@@ -123,8 +130,8 @@ def word_list(name):
         db.execute("INSERT INTO submissions (list_name, count) VALUES (?, 1) "
                    "ON CONFLICT(list_name) DO UPDATE SET count = count + 1", (name,))
         db.commit()
-        return redirect(url_for("word_list", name=name, done=1))
-    return render_template("word_list.html", name=name, words=words, done=request.args.get("done"))
+        return redirect(url_for("word_list_graph", name=name))
+    return render_template("word_list.html", name=name, words=words)
 
 
 @app.route("/<name>-reset", methods=["GET", "POST"])
@@ -149,9 +156,8 @@ def word_list_graph(name):
     n = row[0] if row else 0
     counts = [stored.get(w, 0) for w in words]
     title = f"{name.capitalize()}: words recalled by position"
-    return render_template("graph.html", kind="line", title=title, labels=words, counts=counts,
-                           x_label="Word (presentation order)", y_label="Number of students",
-                           n=n)
+    return render_graph(kind="line", title=title, labels=words, counts=counts, n=n,
+                        x_label="Word (presentation order)", y_label="Number of students")
 
 
 if __name__ == "__main__":

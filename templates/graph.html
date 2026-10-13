@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ title }}{% endblock %}
 {% block head %}
-<meta http-equiv="refresh" content="10">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
   .wrap { max-width: 1000px; height: 70vh; margin: 0 auto; }
@@ -9,11 +8,11 @@
 </style>
 {% endblock %}
 {% block body %}
-<h1>{{ title }}</h1>
-<p class="n">Responses: {{ n }}</p>
+<h1 id="title">{{ title }}</h1>
+<p class="n">Responses: <span id="n">{{ n }}</span></p>
 <div class="wrap"><canvas id="chart"></canvas></div>
 <script>
-  new Chart(document.getElementById("chart"), {
+  const chart = new Chart(document.getElementById("chart"), {
     type: {{ kind|tojson }},
     data: {
       labels: {{ labels|tojson }},
@@ -38,5 +37,20 @@
       }
     }
   });
+
+  // Poll for new data every second and redraw in place.
+  setInterval(async () => {
+    try {
+      const res = await fetch(location.pathname + "?json=1", { cache: "no-store" });
+      if (!res.ok) return;
+      const d = await res.json();
+      document.getElementById("title").textContent = d.title;
+      document.title = d.title;
+      document.getElementById("n").textContent = d.n;
+      chart.data.labels = d.labels;
+      chart.data.datasets[0].data = d.counts;
+      chart.update();
+    } catch (e) { /* network hiccup; try again next tick */ }
+  }, 1000);
 </script>
 {% endblock %}
